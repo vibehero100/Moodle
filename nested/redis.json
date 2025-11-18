@@ -22,7 +22,7 @@
             "location": "[parameters('moodleCommon').location]",
             "name": "[parameters('moodleCommon').redisCacheName]",
             "properties": {
-                "enableNonSslPort": true,
+                "enableNonSslPort": false,
                 "sku": {
                     "capacity": 1,
                     "family": "P",
