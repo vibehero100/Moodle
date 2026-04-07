@@ -911,7 +911,8 @@ EOF
         sed -i "23 a \$CFG->session_redis_acquire_lock_timeout = 120;" /moodle/html/moodle/config.php
         sed -i "23 a \$CFG->session_redis_prefix = 'moodle_prod'; // Optional, default is don't set one." /moodle/html/moodle/config.php
         sed -i "23 a \$CFG->session_redis_database = 0;  // Optional, default is db 0." /moodle/html/moodle/config.php
-        sed -i "23 a \$CFG->session_redis_port = 6379;  // Optional." /moodle/html/moodle/config.php
+        sed -i "23 a \$CFG->session_redis_port = 6379;  // Optional. If SSL is enabled then set to 6380 then add $CFG->session_redis_encrypt = ['verify_peer'=>false, 'verify_peer_name'=>false];
+ on a new line" /moodle/html/moodle/config.php
         sed -i "23 a \$CFG->session_redis_host = '$redisDns';" /moodle/html/moodle/config.php
         sed -i "23 a \$CFG->session_redis_auth = '$redisAuth';" /moodle/html/moodle/config.php
         sed -i "23 a \$CFG->session_handler_class = '\\\core\\\session\\\redis';" /moodle/html/moodle/config.php
