@@ -61,9 +61,6 @@ check_fileServerType_param "$fileServerType"
   apt_update_noninteractive
 
   # install pre-requisites including VARNISH and PHP-FPM
-  add-apt-repository universe -y
-  add-apt-repository ppa:ondrej/php -y
-  apt_update_noninteractive
 
   apt_install_noninteractive \
     azure-cli \
@@ -78,6 +75,7 @@ check_fileServerType_param "$fileServerType"
     mysql-client \
     git \
     unattended-upgrades \
+    tuned \
     varnish \
     php \
     php-cli \
@@ -128,9 +126,9 @@ EOF
     systemctl restart irqbalance.service 
   fi
 
-  # configuring systemctl enable tuned for throughput-performance
-  systemctl enable irqbalance || true
-
+  # configuring tuned for throughput-performance
+  systemctl enable tuned
+  tuned-adm profile throughput-performance
 
   if [ "$fileServerType" = "gluster" ]; then
     #configure gluster repository & install gluster client
