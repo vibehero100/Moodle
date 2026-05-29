@@ -1371,7 +1371,7 @@
                 "offer": "0001-com-ubuntu-server-jammy",
                 "publisher": "Canonical",
                 "sku": "[parameters('ubuntuVersion')]",
-                "version": "22.04.202602250"
+                "version": "latest"
             },
             "phpVersion": "[parameters('phpVersion')]",
             "policyName": "[concat('policy-',variables('resourceprefix'))]",
