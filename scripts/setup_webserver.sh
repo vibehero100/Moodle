@@ -157,7 +157,7 @@ EOF
     apt_install_noninteractive apache2 libapache2-mod-php
   else
     # for nginx-only option
-    apt_install_noninteractive php-fpm
+    apt_install_noninteractive php8.1-fpm
   fi
 
   # Moodle requirements
