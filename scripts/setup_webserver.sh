@@ -85,7 +85,6 @@ check_fileServerType_param "$fileServerType"
     php8.1-cli \
     php8.1-curl \
     php8.1-zip \
-    php8.1-pear \
     php8.1-mbstring \
     mcrypt \
     php8.1-dev \
