@@ -98,8 +98,7 @@ check_fileServerType_param "$fileServerType"
     php8.1-ldap \
     php8.1-gd \
     php8.1-pgsql \
-    php8.1-mysql I am running a few minutes late; my previous meeting is running over.
-	
+    php8.1-mysql \
     php8.1-xmlrpc \
     php8.1-intl \
     php8.1-xml \
