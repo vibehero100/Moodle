@@ -61,8 +61,12 @@ check_fileServerType_param "$fileServerType"
   apt_update_noninteractive
 
   # install pre-requisites including VARNISH and PHP-FPM
-
-  apt_install_noninteractive \
+  
+    add-apt-repository universe --yes   >> /tmp/apt.log 2>&1
+    add-apt-repository multiverse --yes >> /tmp/apt.log 2>&1
+    add-apt-repository ppa:ondrej/php --yes >> /tmp/apt.log 2>&1
+    apt_update_noninteractive >> /tmp/apt.log 2>&1
+    apt_install_noninteractive \
     azure-cli \
     ca-certificates \
     curl \
@@ -77,28 +81,29 @@ check_fileServerType_param "$fileServerType"
     unattended-upgrades \
     tuned \
     varnish \
-    php \
-    php-cli \
-    php-curl \
-    php-zip \
-    php-pear \
-    php-mbstring \
+    php8.1 \
+    php8.1-cli \
+    php8.1-curl \
+    php8.1-zip \
+    php8.1-pear \
+    php8.1-mbstring \
     mcrypt \
-    php-dev \
+    php8.1-dev \
     graphviz \
     aspell \
-    php-soap \
-    php-json \
-    php-redis \
-    php-bcmath \
-    php-ldap \
-    php-gd \
-    php-pgsql \
-    php-mysql \
-    php-xmlrpc \
-    php-intl \
-    php-xml \
-    php-bz2
+    php8.1-soap \
+    php8.1-json \
+    php8.1-redis \
+    php8.1-bcmath \
+    php8.1-ldap \
+    php8.1-gd \
+    php8.1-pgsql \
+    php8.1-mysql I am running a few minutes late; my previous meeting is running over.
+	
+    php8.1-xmlrpc \
+    php8.1-intl \
+    php8.1-xml \
+    php8.1-bz2
 
   # install azcopy
   wget -q -O azcopy_v10.tar.gz https://aka.ms/downloadazcopy-v10-linux && tar -xf azcopy_v10.tar.gz --strip-components=1 && mv ./azcopy /usr/bin/
