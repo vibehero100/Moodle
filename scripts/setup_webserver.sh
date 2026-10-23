@@ -64,7 +64,6 @@ check_fileServerType_param "$fileServerType"
   
     add-apt-repository universe --yes   >> /tmp/apt.log 2>&1
     add-apt-repository multiverse --yes >> /tmp/apt.log 2>&1
-    add-apt-repository ppa:ondrej/php --yes >> /tmp/apt.log 2>&1
     apt_update_noninteractive >> /tmp/apt.log 2>&1
     apt_install_noninteractive \
     azure-cli \
@@ -81,26 +80,26 @@ check_fileServerType_param "$fileServerType"
     unattended-upgrades \
     tuned \
     varnish \
-    php8.1 \
-    php8.1-cli \
-    php8.1-curl \
-    php8.1-zip \
-    php8.1-mbstring \
+    php8.3 \
+    php8.3-cli \
+    php8.3-curl \
+    php8.3-zip \
+    php8.3-mbstring \
     mcrypt \
-    php8.1-dev \
+    php8.3-dev \
     graphviz \
     aspell \
-    php8.1-soap \
-    php8.1-redis \
-    php8.1-bcmath \
-    php8.1-ldap \
-    php8.1-gd \
-    php8.1-pgsql \
-    php8.1-mysql \
-    php8.1-xmlrpc \
-    php8.1-intl \
-    php8.1-xml \
-    php8.1-bz2
+    php8.3-soap \
+    php8.3-redis \
+    php8.3-bcmath \
+    php8.3-ldap \
+    php8.3-gd \
+    php8.3-pgsql \
+    php8.3-mysql \
+    php8.3-xmlrpc \
+    php8.3-intl \
+    php8.3-xml \
+    php8.3-bz2
 
   # install azcopy
   wget -q -O azcopy_v10.tar.gz https://aka.ms/downloadazcopy-v10-linux && tar -xf azcopy_v10.tar.gz --strip-components=1 && mv ./azcopy /usr/bin/
@@ -155,7 +154,7 @@ EOF
     apt_install_noninteractive apache2 libapache2-mod-php
   else
     # for nginx-only option
-    apt_install_noninteractive php8.1-fpm
+    apt_install_noninteractive php8.3-fpm
   fi
 
   # Moodle requirements

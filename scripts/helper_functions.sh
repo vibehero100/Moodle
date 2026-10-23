@@ -113,7 +113,7 @@ function install_php_mssql_driver
     mkdir -p /etc/apt/keyrings
     curl -sLS https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > /etc/apt/keyrings/microsoft.gpg && chmod go+r /etc/apt/keyrings/microsoft.gpg
     
-    echo "deb [arch=`dpkg --print-architecture` signed-by=/etc/apt/keyrings/microsoft.gpg] https://packages.microsoft.com/ubuntu/22.04/prod $AZ_REPO main" > /etc/apt/sources.list.d/mssql-release.list
+    echo "deb [arch=`dpkg --print-architecture` signed-by=/etc/apt/keyrings/microsoft.gpg] https://packages.microsoft.com/ubuntu/24.04/prod $AZ_REPO main" > /etc/apt/sources.list.d/mssql-release.list
     
     wait_for_process apt && \
     apt_update_noninteractive && \
@@ -584,10 +584,11 @@ function create_redis_configuration_in_moodledata_muc_config_php
       'plugin' => 'redis',
       'configuration' => 
       array (
-        'server' => '$redisDns',
+        'server' => '${redisDns}:10000',
         'prefix' => 'moodle_prod',
         'password' => '$redisAuth',
         'serializer' => '1',
+        'encryption' => '1',
       ),
       'features' => 26,
       'modes' => 3,
