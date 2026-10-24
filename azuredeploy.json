@@ -121,9 +121,9 @@
         },
         "moodleVersion": {
             "allowedValues": [
-                "MOODLE_405_STABLE"
+                "MOODLE_503_STABLE"
             ],
-            "defaultValue": "MOODLE_405_STABLE",
+            "defaultValue": "MOODLE_503_STABLE",
             "metadata": {
                 "description": "The Moodle version you want to install."
             },
