@@ -31,7 +31,7 @@ Type: string
 
 Possible Values: null
 
-Default: https://raw.githubusercontent.com/vibehero100/Moodle/5.3LTSUpstreamSync/
+Default: https://raw.githubusercontent.com/vibehero100/Moodle/5.3LTSCodeUpstreamSync/
 
 
 ### _artifactsLocationSasToken
