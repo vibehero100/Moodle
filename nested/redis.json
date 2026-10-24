@@ -18,7 +18,7 @@
     "resources": [
         {
             "type": "Microsoft.Cache/redisEnterprise",
-            "apiVersion": "2025-04-01",
+            "apiVersion": "2025-07-01",
             "location": "[parameters('moodleCommon').location]",
             "name": "[parameters('moodleCommon').redisCacheName]",
             "sku": {
