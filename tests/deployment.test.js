@@ -8,6 +8,7 @@ const root = path.resolve(__dirname, '..');
 const read = name => fs.readFileSync(path.join(root, name), 'utf8').replace(/\r\n/g, '\n');
 const install = read('scripts/install_moodle.sh');
 const web = read('scripts/setup_webserver.sh');
+const elastic = read('scripts/install_elastic.sh');
 const bash = process.env.BASH || (process.platform === 'win32'
     ? 'C:\\Program Files\\Git\\bin\\bash.exe' : 'bash');
 
@@ -28,14 +29,14 @@ test('Moodle 5.3 uses MySQL Flexible Server 8.4', () => {
 
 test('deployment shell scripts pass Bash syntax checks', () => {
     for (const file of ['scripts/install_moodle.sh', 'scripts/setup_webserver.sh',
-        'scripts/helper_functions.sh']) {
+        'scripts/helper_functions.sh', 'scripts/install_elastic.sh']) {
         const result = run(read(file), ['-n']);
         assert.equal(result.status, 0, result.stderr || String(result.error));
     }
 });
 
 test('controller and web setup failures propagate through tee', () => {
-    for (const source of [install, web]) {
+    for (const source of [install, web, elastic]) {
         const settings = source.match(/^set -exo pipefail$/m);
         assert.ok(settings);
         const result = run(`${settings[0]}\n{ false; echo UNEXPECTED; } 2>&1 | tee /dev/null\n`);
@@ -121,4 +122,47 @@ test('web configuration supports Moodle routing and keeps CLI entry points', () 
     assert.match(install, /\/moodle\/html\/moodle\/admin\/cli\/cron\.php/);
     assert.match(install, /\/moodle\/html\/moodle\/public\/search\/cli\/indexer\.php/);
     assert.doesNotMatch(install, /ssl on;/);
+});
+
+test('Elasticsearch pins its service to Java 8 before restart', () => {
+    assert.match(elastic, /apt_install_noninteractive openjdk-8-jre-headless/);
+    assert.doesNotMatch(elastic, /apt_install_noninteractive .*default-j(?:re|dk)/);
+    assert.match(elastic, /java-8-openjdk-\$\(dpkg --print-architecture\)/);
+    assert.match(elastic, /if \[ ! -x "\$elasticJavaHome\/bin\/java" \]/);
+    assert.match(elastic, /printf 'JAVA_HOME="%s"\\n' "\$elasticJavaHome" >> \/etc\/default\/elasticsearch/);
+    assert.ok(elastic.indexOf('printf \'JAVA_HOME=') < elastic.indexOf('service elasticsearch restart'));
+});
+
+test('Elasticsearch readiness retries transient failures and rejects failed startup', () => {
+    const block = elastic.slice(elastic.indexOf('  elasticReady=false'),
+        elastic.indexOf('\n} 2>&1 | tee'));
+    for (const scenario of ['ready', 'delayed', 'stopped', 'timeout']) {
+        const result = run(`
+set -e
+calls=0
+scenario=${scenario}
+curl() {
+  calls=$((calls + 1))
+  case "$scenario" in
+    ready) return 0 ;;
+    delayed) test "$calls" -ge 3 ;;
+    *) return 1 ;;
+  esac
+}
+systemctl() { test "$scenario" != stopped; }
+sleep() { :; }
+journalctl() { echo SERVICE-DIAGNOSTICS; }
+${block}
+echo READY-AFTER-$calls
+`);
+        if (scenario === 'ready' || scenario === 'delayed') {
+            assert.equal(result.status, 0, result.stderr);
+            assert.match(result.stdout, scenario === 'ready' ? /READY-AFTER-1/ : /READY-AFTER-3/);
+        } else {
+            assert.equal(result.status, 1, result.stderr);
+            assert.match(result.stderr, /failed to become responsive/);
+            assert.match(result.stderr, /SERVICE-DIAGNOSTICS/);
+            assert.doesNotMatch(result.stdout, /READY-AFTER/);
+        }
+    }
 });

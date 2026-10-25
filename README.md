@@ -28,6 +28,12 @@ These logs can contain credentials; do not publish them.
 Optional third-party plugins must also support Moodle 5.3; correcting their
 installation paths does not guarantee plugin compatibility.
 
+The optional legacy Elasticsearch 5.6 service uses an explicitly configured
+Java 8 runtime, not Ubuntu's default Java. Its setup fails if the local HTTP
+endpoint on port 9200 does not become responsive; inspect `/tmp/setup.log`
+and `journalctl -u elasticsearch` on the Elasticsearch VM. This runtime fix
+does not upgrade the legacy Elasticsearch version.
+
 Run `npm install` and `npm test` with Node.js 18 or later and Bash to check
 template lint, shell syntax, failure propagation, and shared/local web roots.
 On Windows the tests use Git for Windows Bash; set `BASH` to override its path.
