@@ -285,11 +285,11 @@
         },
         "mysqlVersion": {
             "allowedValues": [
-                "8.0.21"
+                "8.4"
             ],
-            "defaultValue": "8.0.21",
+            "defaultValue": "8.4",
             "metadata": {
-                "description": "Mysql version"
+                "description": "MySQL Flexible Server version. Moodle 5.3 requires MySQL 8.4 or later."
             },
             "type": "string"
         },

@@ -355,13 +355,13 @@ Default: Gen5
 
 ### mysqlVersion
 
-Mysql version
+MySQL Flexible Server version. Moodle 5.3 requires MySQL 8.4 or later.
 
 Type: string
 
-Possible Values: ["5.6","5.7"]
+Possible Values: ["8.4"]
 
-Default: 5.7
+Default: 8.4
 
 
 ### postgresVersion
@@ -758,5 +758,4 @@ Type: string
 Possible Values: null
 
 Default: [resourceGroup().location]
-
 

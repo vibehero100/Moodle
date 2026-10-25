@@ -533,6 +533,7 @@ function get_moodle_unzip_dir_from_moodle_version {
 function create_redis_configuration_in_moodledata_muc_config_php
 {
     # create redis configuration in /moodle/moodledata/muc/config.php
+    mkdir -p /moodle/moodledata/muc
     cat <<EOF > /moodle/moodledata/muc/config.php
 <?php defined('MOODLE_INTERNAL') || die();
  \$configuration = array (

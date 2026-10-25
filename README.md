@@ -9,6 +9,29 @@ CLI](docs/Deploy.md). Please note that while you can use an [Azure free account]
 
 ## Deployment Introduction
 
+### Moodle 5.3 branch requirements
+
+The `5.3LTSCodeUpstreamSync` branch installs Moodle 5.3 with PHP 8.3 and
+Azure Database for MySQL Flexible Server 8.4. Deploy to a fresh resource group;
+do not reuse deployment parameters that pin MySQL to 8.0.21. The legacy MySQL
+Single Server and PostgreSQL 9.6 options are not compatible with Moodle 5.3.
+
+The complete Moodle source tree and `config.php` remain in
+`/moodle/html/moodle`. Web servers serve only its `public` subdirectory
+(or `/var/www/html/moodle/public` when local copying is enabled). Install
+plugins beneath `public`; root-level `admin/cli` scripts remain the CLI entry
+points.
+
+Setup failures now fail the Azure VM extensions instead of reporting success.
+Check `/tmp/install.log` on the controller and `/tmp/setup.log` on web instances.
+These logs can contain credentials; do not publish them.
+Optional third-party plugins must also support Moodle 5.3; correcting their
+installation paths does not guarantee plugin compatibility.
+
+Run `npm install` and `npm test` with Node.js 18 or later and Bash to check
+template lint, shell syntax, failure propagation, and shared/local web roots.
+On Windows the tests use Git for Windows Bash; set `BASH` to override its path.
+
 In the table below, we provide a number of default configurations at different scales of operation. These options minimize the configuration you would otherwise need to do manually; these options are essentially "good practice" recommendations. Once deployed, you will have full access to the Azure resources and can adjust the deployment to suit your needs. If you would prefer to have full control over all the configuration options at deployment, please refer to [the fully configurable section](#Fully Configurable) right after the Predefined deployment option section.
 
 ## SSH Key Requirement

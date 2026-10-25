@@ -20,7 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-set -ex
+set -exo pipefail
 
 #parameters 
 {
@@ -248,63 +248,64 @@ set -ex
     # install Moodle 
     cat <<EOF > /tmp/setup-moodle.sh
 #!/bin/bash
+set -euo pipefail
 mkdir -p /moodle/tmp
 cd /moodle/tmp
 
 if [ ! -d /moodle/html/moodle ]; then
     # downloading moodle only if /moodle/html/moodle does not exist -- if it exists, user should populate it in advance correctly as below. This is to reduce template deployment time.
-    /usr/bin/curl -k --max-redirs 10 https://github.com/moodle/moodle/archive/MOODLE_503_STABLE.zip -L -o moodle.zip
+    /usr/bin/curl --fail --show-error --max-redirs 10 "https://github.com/moodle/moodle/archive/$moodleVersion.zip" -L -o moodle.zip
     /usr/bin/unzip -q moodle.zip
     /bin/mv "$moodleUnzipDir" /moodle/html/moodle
 fi
 
 if [ "$installGdprPluginsSwitch" = "true" ]; then
     # install Moodle GDPR plugins (Note: This is only for Moodle versions 3.4.2+ or 3.3.5+ and will be included in Moodle 3.5, so no need for 3.5)
-    curl -k --max-redirs 10 https://github.com/moodlehq/moodle-tool_policy/archive/"$moodleStableVersion".zip -L -o plugin-policy.zip
+    curl --fail --show-error --max-redirs 10 https://github.com/moodlehq/moodle-tool_policy/archive/"$moodleStableVersion".zip -L -o plugin-policy.zip
     unzip -q plugin-policy.zip
-    mv moodle-tool_policy-"$moodleStableVersion" /moodle/html/moodle/admin/tool/policy
+    mv moodle-tool_policy-"$moodleStableVersion" /moodle/html/moodle/public/admin/tool/policy
 
-    curl -k --max-redirs 10 https://github.com/moodlehq/moodle-tool_dataprivacy/archive/"$moodleStableVersion".zip -L -o plugin-dataprivacy.zip
+    curl --fail --show-error --max-redirs 10 https://github.com/moodlehq/moodle-tool_dataprivacy/archive/"$moodleStableVersion".zip -L -o plugin-dataprivacy.zip
     unzip -q plugin-dataprivacy.zip
-    mv moodle-tool_dataprivacy-"$moodleStableVersion" /moodle/html/moodle/admin/tool/dataprivacy
+    mv moodle-tool_dataprivacy-"$moodleStableVersion" /moodle/html/moodle/public/admin/tool/dataprivacy
 fi
 
 if [ "$installO365pluginsSwitch" = "true" ]; then
     # install Office 365 plugins
-    curl -k --max-redirs 10 https://github.com/Microsoft/o365-moodle/archive/"$o365pluginVersion".zip -L -o o365.zip
+    curl --fail --show-error --max-redirs 10 https://github.com/Microsoft/o365-moodle/archive/"$o365pluginVersion".zip -L -o o365.zip
     unzip -q o365.zip
-    cp -r o365-moodle-"$o365pluginVersion"/* /moodle/html/moodle
+    cp -r o365-moodle-"$o365pluginVersion"/* /moodle/html/moodle/public
     rm -rf o365-moodle-"$o365pluginVersion"
 fi
 
 if [ "$searchType" = "elastic" ]; then
     # Install ElasticSearch plugin
-    /usr/bin/curl -k --max-redirs 10 https://github.com/catalyst/moodle-search_elastic/archive/master.zip -L -o plugin-elastic.zip
+    /usr/bin/curl --fail --show-error --max-redirs 10 https://github.com/catalyst/moodle-search_elastic/archive/master.zip -L -o plugin-elastic.zip
     /usr/bin/unzip -q plugin-elastic.zip
-    /bin/mv moodle-search_elastic-master /moodle/html/moodle/search/engine/elastic
+    /bin/mv moodle-search_elastic-master /moodle/html/moodle/public/search/engine/elastic
 
     # Install ElasticSearch plugin dependency
-    /usr/bin/curl -k --max-redirs 10 https://github.com/catalyst/moodle-local_aws/archive/master.zip -L -o local-aws.zip
+    /usr/bin/curl --fail --show-error --max-redirs 10 https://github.com/catalyst/moodle-local_aws/archive/master.zip -L -o local-aws.zip
     /usr/bin/unzip -q local-aws.zip
-    /bin/mv moodle-local_aws-master /moodle/html/moodle/local/aws
+    /bin/mv moodle-local_aws-master /moodle/html/moodle/public/local/aws
 
 elif [ "$searchType" = "azure" ]; then
     # Install Azure Search service plugin
-    /usr/bin/curl -k --max-redirs 10 https://github.com/catalyst/moodle-search_azure/archive/master.zip -L -o plugin-azure-search.zip
+    /usr/bin/curl --fail --show-error --max-redirs 10 https://github.com/catalyst/moodle-search_azure/archive/master.zip -L -o plugin-azure-search.zip
     /usr/bin/unzip -q plugin-azure-search.zip
-    /bin/mv moodle-search_azure-master /moodle/html/moodle/search/engine/azure
+    /bin/mv moodle-search_azure-master /moodle/html/moodle/public/search/engine/azure
 fi
 
 if [ "$installObjectFsSwitch" = "true" ]; then
     # Install the ObjectFS plugin
-    /usr/bin/curl -k --max-redirs 10 https://github.com/catalyst/moodle-tool_objectfs/archive/master.zip -L -o plugin-objectfs.zip
+    /usr/bin/curl --fail --show-error --max-redirs 10 https://github.com/catalyst/moodle-tool_objectfs/archive/master.zip -L -o plugin-objectfs.zip
     /usr/bin/unzip -q plugin-objectfs.zip
-    /bin/mv moodle-tool_objectfs-master /moodle/html/moodle/admin/tool/objectfs
+    /bin/mv moodle-tool_objectfs-master /moodle/html/moodle/public/admin/tool/objectfs
 
     # Install the ObjectFS Azure library
-    /usr/bin/curl -k --max-redirs 10 https://github.com/catalyst/moodle-local_azure_storage/archive/master.zip -L -o plugin-azurelibrary.zip
+    /usr/bin/curl --fail --show-error --max-redirs 10 https://github.com/catalyst/moodle-local_azure_storage/archive/master.zip -L -o plugin-azurelibrary.zip
     /usr/bin/unzip -q plugin-azurelibrary.zip
-    /bin/mv moodle-local_azure_storage-master /moodle/html/moodle/local/azure_storage
+    /bin/mv moodle-local_azure_storage-master /moodle/html/moodle/public/local/azure_storage
 fi
 cd /moodle
 rm -rf /moodle/tmp
@@ -386,7 +387,7 @@ EOF
 server {
         listen 81 default;
         server_name ${siteFQDN};
-        root /moodle/html/moodle;
+        root /moodle/html/moodle/public;
         index index.php index.html index.htm;
 
         # Log to syslog
@@ -418,13 +419,13 @@ EOF
         }
 
     location / {
-        try_files \$uri \$uri/index.php?\$query_string;
+        try_files \$uri \$uri/ /r.php\$is_args\$args;
     }
  
     location ~ [^/]\.php(/|$) {
         fastcgi_split_path_info ^(.+?\.php)(/.*)$;
         if (!-f \$document_root\$fastcgi_script_name) {
-                return 404;
+                rewrite ^ /r.php last;
         }
 
         fastcgi_buffers 16 16k;
@@ -441,10 +442,9 @@ EOF
         cat <<EOF >> /etc/nginx/sites-enabled/${siteFQDN}.conf
 server {
         listen 443 ssl;
-        root /moodle/html/moodle;
+        root /moodle/html/moodle/public;
         index index.php index.html index.htm;
 
-        ssl on;
         ssl_certificate /moodle/certs/nginx.crt;
         ssl_certificate_key /moodle/certs/nginx.key;
 
@@ -853,8 +853,8 @@ EOF
             replace_moodle_config_value "dataroot" "\/moodle\/moodledata"
             replace_moodle_config_value "wwwroot" "$siteProtocol:\/\/$siteFQDN"
         else
-            echo -e "cd /tmp; /usr/bin/php /moodle/html/moodle/admin/cli/install.php --chmod=770 --lang=en --wwwroot="$siteProtocol"://"$siteFQDN" --dataroot=/moodle/moodledata --dbhost="$mysqlIP" --dbname="$moodledbname" --dbuser="$azuremoodledbuser" --dbpass="$moodledbpass" --dbtype=mysqli --fullname='Moodle LMS' --shortname='Moodle' --adminuser=admin --adminpass="$adminpass" --adminemail=admin@"$siteFQDN" --non-interactive --agree-license --allow-unstable || true "
-            cd /tmp; /usr/bin/php /moodle/html/moodle/admin/cli/install.php --chmod=770 --lang=en --wwwroot=$siteProtocol://$siteFQDN   --dataroot=/moodle/moodledata --dbhost=$mysqlIP   --dbname=$moodledbname   --dbuser=$azuremoodledbuser   --dbpass=$moodledbpass   --dbtype=mysqli --fullname='Moodle LMS' --shortname='Moodle' --adminuser=admin --adminpass=$adminpass   --adminemail=admin@$siteFQDN   --non-interactive --agree-license --allow-unstable || true
+            cd /tmp
+            /usr/bin/php /moodle/html/moodle/admin/cli/install.php --chmod=770 --lang=en --wwwroot="$siteProtocol://$siteFQDN" --dataroot=/moodle/moodledata --dbhost="$mysqlIP" --dbname="$moodledbname" --dbuser="$azuremoodledbuser" --dbpass="$moodledbpass" --dbtype=mysqli --fullname='Moodle LMS' --shortname='Moodle' --adminuser=admin --adminpass="$adminpass" --adminemail="admin@$siteFQDN" --non-interactive --agree-license
         fi
 
         if [ "$installObjectFsSwitch" = "true" ]; then
@@ -865,7 +865,8 @@ EOF
             mysql -h $mysqlIP -u $mysqladminlogin -p${mysqladminpass} ${moodledbname} -e "INSERT INTO mdl_config_plugins (plugin, name, value) VALUES ('tool_objectfs', 'azure_sastoken', '${sas}');"
         fi
     elif [ $dbServerType = "mssql" ]; then
-        cd /tmp; /usr/bin/php /moodle/html/moodle/admin/cli/install.php --chmod=770 --lang=en --wwwroot=$siteProtocol://$siteFQDN   --dataroot=/moodle/moodledata --dbhost=$mssqlIP   --dbname=$moodledbname   --dbuser=$azuremoodledbuser   --dbpass=$moodledbpass   --dbtype=sqlsrv --fullname='Moodle LMS' --shortname='Moodle' --adminuser=admin --adminpass=$adminpass   --adminemail=admin@$siteFQDN   --non-interactive --agree-license --allow-unstable || true
+        cd /tmp
+        /usr/bin/php /moodle/html/moodle/admin/cli/install.php --chmod=770 --lang=en --wwwroot="$siteProtocol://$siteFQDN" --dataroot=/moodle/moodledata --dbhost="$mssqlIP" --dbname="$moodledbname" --dbuser="$azuremoodledbuser" --dbpass="$moodledbpass" --dbtype=sqlsrv --fullname='Moodle LMS' --shortname='Moodle' --adminuser=admin --adminpass="$adminpass" --adminemail="admin@$siteFQDN" --non-interactive --agree-license
 
         if [ "$installObjectFsSwitch" = "true" ]; then
             /opt/mssql-tools/bin/sqlcmd -S $mssqlIP -U $mssqladminlogin -P ${mssqladminpass} -d ${moodledbname} -Q "INSERT INTO mdl_config_plugins (plugin, name, value) VALUES ('tool_objectfs', 'enabletasks', 1)" 
@@ -875,8 +876,8 @@ EOF
             /opt/mssql-tools/bin/sqlcmd -S $mssqlIP -U $mssqladminlogin -P ${mssqladminpass} -d${moodledbname} -Q "INSERT INTO mdl_config_plugins (plugin, name, value) VALUES ('tool_objectfs', 'azure_sastoken', '${sas}')"
         fi
     else
-        echo -e "cd /tmp; /usr/bin/php /moodle/html/moodle/admin/cli/install.php --chmod=770 --lang=en --wwwroot="$siteProtocol"://"$siteFQDN" --dataroot=/moodle/moodledata --dbhost="$postgresIP" --dbname="$moodledbname" --dbuser="$azuremoodledbuser" --dbpass="$moodledbpass" --dbtype=pgsql --fullname='Moodle LMS' --shortname='Moodle' --adminuser=admin --adminpass="$adminpass" --adminemail=admin@"$siteFQDN" --non-interactive --agree-license --allow-unstable || true "
-        cd /tmp; /usr/bin/php /moodle/html/moodle/admin/cli/install.php --chmod=770 --lang=en --wwwroot=$siteProtocol://$siteFQDN   --dataroot=/moodle/moodledata --dbhost=$postgresIP   --dbname=$moodledbname   --dbuser=$azuremoodledbuser   --dbpass=$moodledbpass   --dbtype=pgsql --fullname='Moodle LMS' --shortname='Moodle' --adminuser=admin --adminpass=$adminpass   --adminemail=admin@$siteFQDN   --non-interactive --agree-license --allow-unstable || true
+        cd /tmp
+        /usr/bin/php /moodle/html/moodle/admin/cli/install.php --chmod=770 --lang=en --wwwroot="$siteProtocol://$siteFQDN" --dataroot=/moodle/moodledata --dbhost="$postgresIP" --dbname="$moodledbname" --dbuser="$azuremoodledbuser" --dbpass="$moodledbpass" --dbtype=pgsql --fullname='Moodle LMS' --shortname='Moodle' --adminuser=admin --adminpass="$adminpass" --adminemail="admin@$siteFQDN" --non-interactive --agree-license
 
         if [ "$installObjectFsSwitch" = "true" ]; then
             # Add the ObjectFS configuration to Moodle.
@@ -890,8 +891,6 @@ EOF
         fi
     fi
 
-    echo -e "\n\rDone! Installation completed!\n\r"
-    
     # use /tmp/localcachedir/ for localcache and /var/www/html/moodle/ for core_component.php
     dir="/var/www/html/moodle"
     if [[ ! -d $dir ]]; then
@@ -934,7 +933,7 @@ EOF
         sed -i "23 a \$CFG->searchengine = 'elastic';" /moodle/html/moodle/config.php
         sed -i "23 a \$CFG->enableglobalsearch = 'true';" /moodle/html/moodle/config.php
         # create index
-        php /moodle/html/moodle/search/cli/indexer.php --force --reindex || true
+        php /moodle/html/moodle/public/search/cli/indexer.php --force --reindex
 
     elif [ "$searchType" = "azure" ]; then
         # Set up Azure Search service plugin
@@ -947,7 +946,7 @@ EOF
         sed -i "23 a \$CFG->searchengine = 'azure';" /moodle/html/moodle/config.php
         sed -i "23 a \$CFG->enableglobalsearch = 'true';" /moodle/html/moodle/config.php
         # create index
-        php /moodle/html/moodle/search/cli/indexer.php --force --reindex || true
+        php /moodle/html/moodle/public/search/cli/indexer.php --force --reindex
 
     fi
 
@@ -1039,15 +1038,15 @@ EOF
          export AZCOPY_CONCURRENCY_VALUE='48'
          export AZCOPY_BUFFER_GB='4'
 
-         # cp -a /moodle_old_delete_me/* /moodle || true # Ignore case sensitive directory copy failure
-         azcopy --log-level ERROR copy "/moodle_old_delete_me/*" "https://$NAME.file.core.windows.net/moodle?$sas" --recursive || true # Ignore case sensitive directory copy failure
-         rm -rf /moodle_old_delete_me || true # Keep the files just in case
+         azcopy --log-level ERROR copy "/moodle_old_delete_me/*" "https://$NAME.file.core.windows.net/moodle?$sas" --recursive
+         rm -rf /moodle_old_delete_me
       fi
    fi
 
    create_last_modified_time_update_script
    run_once_last_modified_time_update_script
 
+   echo -e "\n\rDone! Installation completed!\n\r"
    echo "### Script End `date`###"
 
 }  2>&1 | tee /tmp/install.log

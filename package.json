@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "A package file for developer depenedencies when testing templates",
   "scripts": {
-    "test": "grunt test"
+    "test": "grunt test && node --test tests/deployment.test.js"
   },
   "repository": {
     "type": "git",

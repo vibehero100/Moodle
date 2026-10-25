@@ -20,7 +20,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-set -ex
+set -exo pipefail
 echo "### Script Start $(date)###"
 
 moodle_on_azure_configs_json_path=${1}
@@ -303,11 +303,18 @@ EOF
       setup_html_local_copy_cron_job
     fi
     if [ "$fileServerType" = "nfs" -o "$fileServerType" = "nfs-ha" -o "$fileServerType" = "nfs-byo" -o "$fileServerType" = "gluster" ]; then
-      mkdir -p /var/www/html/moodle
+      htmlRootDir="/var/www/html/moodle"
+      mkdir -p "$htmlRootDir"
       rsync -a /moodle/html/moodle/ $htmlRootDir/
       chown www-data:www-data -R $htmlRootDir && sync
       setup_html_local_copy_cron_job
     fi
+  fi
+
+  htmlRootDir="${htmlRootDir}/public"
+  if [ ! -f "${htmlRootDir}/index.php" ]; then
+    echo "Moodle public/index.php is missing from ${htmlRootDir}; refusing to configure an incomplete site." >&2
+    exit 1
   fi
 
   if [ "$httpsTermination" = "VMSS" ]; then
@@ -392,13 +399,13 @@ EOF
         }
 
   location / {
-    try_files \$uri \$uri/index.php?\$query_string;
+    try_files \$uri \$uri/ /r.php\$is_args\$args;
   }
  
         location ~ [^/]\.php(/|$) {
           fastcgi_split_path_info ^(.+?\.php)(/.*)$;
           if (!-f \$document_root\$fastcgi_script_name) {
-                  return 404;
+                  rewrite ^ /r.php last;
           }
  
           fastcgi_buffers 16 16k;
@@ -436,6 +443,7 @@ EOF
     Options FollowSymLinks
     AllowOverride All
     Require all granted
+    FallbackResource /r.php
   </Directory>
 EOF
     if [ "$httpsTermination" != "None" ]; then

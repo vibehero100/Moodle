@@ -42,7 +42,7 @@
     "resources": [
       {
         "type": "Microsoft.DBforMySQL/flexibleServers",
-        "apiVersion": "2021-05-01",
+        "apiVersion": "2024-12-30",
         "location": "[parameters('moodleCommon').location]",
         "name": "[parameters('moodleCommon').serverName]",
         "sku": {
@@ -58,13 +58,13 @@
             "mode": "[parameters('moodleCommon').mysqlflexHaEnabled]",
             "standbyAvailabilityZone": "[parameters('moodleCommon').mysqlflexStandbyAvailabilityZone]"
           },
-          "Storage": {
+          "storage": {
             "storageSizeGB": "[parameters('moodleCommon').mysqlflexStgSizeGiB]",
             "iops": "[parameters('moodleCommon').mysqlflexStgIops]",
-            "autogrow": "[parameters('moodleCommon').mysqlflexStgAutogrow]"
+            "autoGrow": "[parameters('moodleCommon').mysqlflexStgAutogrow]"
           },
           "network": "[if(parameters('moodleCommon').vnetDbDeploySwitch, variables('vnetNetworkData'), createObject())]",
-          "Backup": {
+          "backup": {
             "backupRetentionDays": 35,
             "geoRedundantBackup": "Enabled"
           }
